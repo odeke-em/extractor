@@ -1,0 +1,28 @@
+{
+	"ImportPath": "github.com/odeke-em/extractor",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-10-g33e0aa1",
+			"Rev": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-130-g17752b2",
+			"Rev": "17752b20aa29c599c7b6c22f1901d63983c5c25b"
+		},
+		{
+			"ImportPath": "github.com/martini-contrib/binding",
+			"Rev": "8aaceec3b52c275477f32c95ea5c6e8ccaba04c5"
+		},
+		{
+			"ImportPath": "github.com/odeke-em/exponential-backoff",
+			"Rev": "96e25d36ae36ad09ac02cbfe653b44c4043a8e09"
+		},
+		{
+			"ImportPath": "github.com/odeke-em/extrict/src",
+			"Rev": "a6387ad8081e1153d299ccd1d56db583a81d135c"
+		}
+	]
+}
