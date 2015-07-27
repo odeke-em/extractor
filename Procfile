@@ -1,1 +1,1 @@
-web: cd cmd && vidler
+web: extractor
