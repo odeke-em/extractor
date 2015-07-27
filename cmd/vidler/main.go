@@ -11,10 +11,21 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/binding"
 	"github.com/odeke-em/extrict/src"
+
+	"github.com/odeke-em/extractor"
 )
 
+var envKeyAlias = &extractor.EnvKey{
+	PubKeyAlias:  "VIDLER_PUB_KEY",
+	PrivKeyAlias: "VIDLER_PRIV_KEY",
+}
+
+var envKeySet = extractor.KeySetFromEnv(envKeyAlias)
+
 type DownloadItem struct {
-	URI string `form:"uri" binding:"required"`
+	URI       string `form:"uri" binding:"required"`
+	PublicKey string `form:"pubkey" binding:"-"`
+	Signature string `form:"signature" binding:"-"`
 }
 
 func headerShallowCopy(from, to http.Header) {
@@ -39,6 +50,19 @@ func headGet(di DownloadItem, res http.ResponseWriter, req *http.Request) error 
 
 func download(di DownloadItem, res http.ResponseWriter, req *http.Request) {
 	uri := di.URI
+
+	if di.PublicKey != envKeySet.PublicKey {
+		http.Error(res, "invalid publickey", 400)
+		return
+	}
+
+	if !envKeySet.Match([]byte(uri), []byte(di.Signature)) {
+		http.Error(res, "invalid signature", 400)
+		return
+	}
+
+	fmt.Println("matching!")
+
 	downloadResult, err := http.Get(uri)
 
 	if err != nil {
@@ -99,6 +123,12 @@ func uriInsertions(w io.Writer, ut uriInsert) {
 	t := template.New("newiters")
 	t = t.Funcs(template.FuncMap{
 		"basename": filepath.Base,
+		"sign": func(uri string) string {
+			return fmt.Sprintf("%s", envKeySet.Sign([]byte(uri)))
+		},
+		"pubkey": func() string {
+			return envKeySet.PublicKey
+		},
 	})
 
 	t, _ = t.Parse(
@@ -108,7 +138,7 @@ func uriInsertions(w io.Writer, ut uriInsert) {
             <source src="{{ . }}" type="video/mp4">{{ basename . }}</source>
         </video>
         <br />
-        <a href="/download?uri={{ . }}">Download</a>
+        <a href="/download?uri={{ . }}&signature={{ sign . }}&pubkey={{ pubkey }}">Download</a>
         <br />
         <br />
     {{ end }}
