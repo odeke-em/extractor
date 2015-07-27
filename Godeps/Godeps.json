@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/odeke-em/extractor",
+	"ImportPath": "github.com/odeke-em/extractor/cmd/vidler",
 	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
