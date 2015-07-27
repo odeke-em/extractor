@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -198,7 +199,23 @@ func extrictMp4(di DownloadItem, res http.ResponseWriter, req *http.Request) {
     `)
 }
 
+func errorPrint(fmt_ string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, "\033[31m")
+	fmt.Fprintf(os.Stderr, fmt_, args...)
+	fmt.Fprintf(os.Stderr, "\033[00m")
+}
+
 func main() {
+	if envKeySet.PublicKey == "" {
+		errorPrint("publicKey not set. Please set %s in your env.\n", envKeyAlias.PubKeyAlias)
+		return
+	}
+
+	if envKeySet.PrivateKey == "" {
+		errorPrint("privateKey not set. Please set %s in your env.\n", envKeyAlias.PrivKeyAlias)
+		return
+	}
+
 	m := martini.Classic()
 
 	m.Get("/", requestDownloadForm)
